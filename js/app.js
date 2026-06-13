@@ -1,10 +1,10 @@
-/* ===== CamShare — Phase 1: App Logic ===== */
+/* ===== CamShare — Phase 2: App Logic ===== */
 
 (function () {
   'use strict';
 
   // ── State ──────────────────────────────────────────────
-  const state = {
+  var state = {
     name: '',
     gender: null,    // '男' | '女' | '不指定' | null
     age: null,
@@ -14,29 +14,39 @@
   };
 
   // ── DOM Cache ──────────────────────────────────────────
-  const steps = [];
-  for (let i = 0; i <= 4; i++) {
+  var steps = [];
+  for (var i = 0; i <= 4; i++) {
     steps.push(document.getElementById('step-' + i));
   }
 
-  const btnStart = document.getElementById('btn-start');
-  const btnNextStep2 = document.getElementById('btn-next-step2');
-  const btnCapture = document.getElementById('btn-capture');
-  const btnShare = document.getElementById('btn-share');
-  const btnRestart = document.getElementById('btn-restart');
-  const btnRestartFinal = document.getElementById('btn-restart-final');
+  var btnStart = document.getElementById('btn-start');
+  var btnNextStep2 = document.getElementById('btn-next-step2');
+  var btnCapture = document.getElementById('btn-capture');
+  var btnConfirm = document.getElementById('btn-confirm');
+  var btnRetake = document.getElementById('btn-retake');
+  var btnShare = document.getElementById('btn-share');
+  var btnRestart = document.getElementById('btn-restart');
+  var btnRestartFinal = document.getElementById('btn-restart-final');
 
-  const inputName = document.getElementById('input-name');
-  const inputAge = document.getElementById('input-age');
-  const nameError = document.getElementById('name-error');
-  const genderBtns = document.querySelectorAll('.gender-btn');
+  var inputName = document.getElementById('input-name');
+  var inputAge = document.getElementById('input-age');
+  var nameError = document.getElementById('name-error');
+  var genderBtns = document.querySelectorAll('.gender-btn');
 
   // ── Step Navigation ────────────────────────────────────
   function goToStep(n) {
     if (n < 0 || n > 4) return;
 
-    const current = steps[state.currentStep];
-    const target = steps[n];
+    var current = steps[state.currentStep];
+    var target = steps[n];
+
+    // Cleanup when leaving a step
+    if (state.currentStep === 2 && n !== 2) {
+      // Leaving camera step
+      if (window.CamCamera) {
+        window.CamCamera.stopCamera();
+      }
+    }
 
     // Fade out current
     current.classList.remove('active');
@@ -57,6 +67,14 @@
 
       state.currentStep = n;
 
+      // Setup when entering a step
+      if (n === 2) {
+        // Entering camera step
+        if (window.CamCamera) {
+          window.CamCamera.initCamera();
+        }
+      }
+
       // Push history state
       history.pushState({ step: n }, '', '#step-' + n);
     }, 200);
@@ -64,8 +82,8 @@
 
   // ── Validation ──────────────────────────────────────────
   function validateStep1() {
-    const name = inputName.value.trim();
-    const isValid = name.length > 0;
+    var name = inputName.value.trim();
+    var isValid = name.length > 0;
 
     btnNextStep2.disabled = !isValid;
 
@@ -146,10 +164,38 @@
     goToStep(2);
   });
 
-  // Step 2 → Continue (placeholder for camera)
+  // Step 2 → Capture photo
   btnCapture.addEventListener('click', function () {
-    // Phase 2 will add camera logic here
-    goToStep(3);
+    if (!window.CamCamera) return;
+
+    btnCapture.style.display = 'none';
+
+    window.CamCamera.capturePhoto().then(function (blob) {
+      if (blob) {
+        state.photoData = blob;
+        window.CamCamera.showPreview(blob);
+      } else {
+        // If capture failed, re-show capture button
+        btnCapture.style.display = 'flex';
+      }
+    }).catch(function () {
+      btnCapture.style.display = 'flex';
+    });
+  });
+
+  // Step 2 → Confirm photo
+  btnConfirm.addEventListener('click', function () {
+    if (state.photoData) {
+      goToStep(3);
+    }
+  });
+
+  // Step 2 → Retake photo
+  btnRetake.addEventListener('click', function () {
+    state.photoData = null;
+    if (window.CamCamera) {
+      window.CamCamera.resumeCamera();
+    }
   });
 
   // Step 3 → Restart
@@ -176,6 +222,13 @@
       targetStep = Math.max(0, Math.min(4, e.state.step));
     }
 
+    // Cleanup current step
+    if (state.currentStep === 2 && targetStep !== 2) {
+      if (window.CamCamera) {
+        window.CamCamera.stopCamera();
+      }
+    }
+
     // Directly set without animation for back navigation
     steps[state.currentStep].classList.remove('active');
     steps[state.currentStep].style.display = 'none';
@@ -183,12 +236,17 @@
     steps[targetStep].style.display = 'block';
     steps[targetStep].classList.add('active');
     state.currentStep = targetStep;
+
+    // Init camera if going back to step 2
+    if (targetStep === 2 && window.CamCamera) {
+      window.CamCamera.initCamera();
+    }
   });
 
   // ── Initialize ─────────────────────────────────────────
   // Ensure only step-0 is visible on load
-  steps.forEach(function (step, i) {
-    if (i === 0) {
+  steps.forEach(function (step, idx) {
+    if (idx === 0) {
       step.style.display = 'block';
       step.classList.add('active');
     } else {

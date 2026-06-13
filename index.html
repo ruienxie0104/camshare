@@ -90,24 +90,87 @@
     <!-- Step 2: 拍照 -->
     <section id="step-2" class="step-section">
       <div class="text-center">
-        <h2 class="text-2xl font-bold text-blue-900 mb-6">拍照</h2>
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">拍照</h2>
 
-        <!-- Camera placeholder -->
-        <div class="camera-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
-          <div class="text-center text-gray-400">
-            <svg class="w-16 h-16 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Camera container -->
+        <div id="camera-container" class="camera-container">
+
+          <!-- Loading spinner -->
+          <div id="camera-loading" class="camera-loading" style="display:none;">
+            <div class="camera-spinner"></div>
+            <p class="text-sm text-gray-500 mt-3">正在開啟相機…</p>
+          </div>
+
+          <!-- Error message area -->
+          <div id="camera-error" class="camera-error" style="display:none;">
+            <svg class="w-12 h-12 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <p class="error-title text-lg font-semibold text-gray-800 mb-2"></p>
+            <p class="error-body text-sm text-gray-600"></p>
+          </div>
+
+          <!-- Video stream -->
+          <video id="camera-video" class="camera-video" playsinline muted autoplay></video>
+
+          <!-- SVG poster frame overlay -->
+          <div id="poster-overlay" class="poster-overlay" style="display:none;">
+            <svg class="poster-overlay-svg" viewBox="0 0 360 480" preserveAspectRatio="xMidYMid meet">
+              <!-- Top bar -->
+              <rect x="0" y="0" width="360" height="90" fill="#1e3a5f" opacity="0.85"/>
+              <!-- Title -->
+              <text x="180" y="60" text-anchor="middle" font-size="32" font-weight="700" fill="#ffffff" font-family="sans-serif" letter-spacing="6">尋人啟事</text>
+              <!-- Left bracket -->
+              <path d="M 38 140 L 22 140 L 22 320 L 38 320" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <!-- Right bracket -->
+              <path d="M 322 140 L 338 140 L 338 320 L 322 320" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <!-- Bottom bar -->
+              <rect x="0" y="365" width="360" height="115" fill="#1e3a5f" opacity="0.85"/>
+              <!-- Info labels -->
+              <text x="180" y="400" text-anchor="middle" font-size="14" fill="#ffffff" font-family="sans-serif" opacity="0.7">
+                <tspan x="180">姓名：_____________</tspan>
+                <tspan x="180" dy="22">性別：_____　年齡：_____</tspan>
+              </text>
+              <!-- Bottom dots -->
+              <circle cx="165" cy="462" r="3" fill="#ffffff" opacity="0.4"/>
+              <circle cx="180" cy="462" r="3" fill="#93c5fd" opacity="0.7"/>
+              <circle cx="195" cy="462" r="3" fill="#ffffff" opacity="0.4"/>
+            </svg>
+          </div>
+
+          <!-- Face guide overlay -->
+          <div id="face-guide" class="face-guide" style="display:none;">
+            <div class="face-guide-oval"></div>
+            <p class="face-guide-text">把臉對準這裡</p>
+          </div>
+
+          <!-- Photo preview -->
+          <div id="photo-preview" class="photo-preview" style="display:none;">
+            <img src="" alt="預覽照片" />
+          </div>
+
+        </div>
+
+        <!-- Capture button -->
+        <div id="capture-btn-wrap" class="capture-btn-wrap">
+          <button id="btn-capture" class="btn-capture" style="display:none;">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
-            <p class="text-sm">相機將在此開啟</p>
-          </div>
+          </button>
         </div>
 
-        <p class="text-gray-500 mb-6">即將開啟相機，在尋人啟事框架中拍下你的照片</p>
+        <!-- Confirm / Retake buttons -->
+        <div id="preview-btn-wrap" class="preview-btn-wrap" style="display:none;">
+          <button id="btn-retake" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">
+            重拍
+          </button>
+          <button id="btn-confirm" class="btn-primary flex-1 py-3 rounded-lg font-semibold">
+            確認
+          </button>
+        </div>
 
-        <button id="btn-capture" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold">
-          繼續
-        </button>
       </div>
     </section>
 
@@ -161,6 +224,7 @@
 
   </div>
 
+  <script src="js/camera.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
