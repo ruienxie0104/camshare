@@ -62,10 +62,11 @@
     faceGuide.style.display = 'flex';
     btnCapture.style.display = 'flex';
 
-    // Hide preview controls
-    photoPreview.style.display = 'none';
-    btnConfirm.style.display = 'none';
-    btnRetake.style.display = 'none';
+    // Show capture button wrapper, hide preview wrapper
+    var captureBtnWrap = document.getElementById('capture-btn-wrap');
+    if (captureBtnWrap) captureBtnWrap.style.display = 'flex';
+    var previewBtnWrap = document.getElementById('preview-btn-wrap');
+    if (previewBtnWrap) previewBtnWrap.style.display = 'none';
   }
 
   // ── Init camera ─────────────────────────────────────────
@@ -198,9 +199,17 @@
     faceGuide.style.display = 'none';
     btnCapture.style.display = 'none';
 
+    // Hide capture button wrapper
+    var captureBtnWrap = document.getElementById('capture-btn-wrap');
+    if (captureBtnWrap) captureBtnWrap.style.display = 'none';
+
     photoPreview.style.display = 'block';
     btnConfirm.style.display = 'flex';
     btnRetake.style.display = 'flex';
+
+    // Show the preview button wrapper
+    var previewBtnWrap = document.getElementById('preview-btn-wrap');
+    if (previewBtnWrap) previewBtnWrap.style.display = 'flex';
   }
 
   // ── Resume camera (retake) ──────────────────────────────
@@ -211,6 +220,10 @@
     photoPreview.style.display = 'none';
     btnConfirm.style.display = 'none';
     btnRetake.style.display = 'none';
+
+    // Hide the preview button wrapper
+    var previewBtnWrap = document.getElementById('preview-btn-wrap');
+    if (previewBtnWrap) previewBtnWrap.style.display = 'none';
 
     // Revoke old object URL
     var previewImg = photoPreview.querySelector('img');
