@@ -361,6 +361,11 @@ input[type="number"] {
   margin-right: auto;
 }
 
+.preview-btn-wrap button {
+  text-align: center;
+  justify-content: center;
+}
+
 /* Camera loading spinner */
 .camera-loading {
   display: none;
