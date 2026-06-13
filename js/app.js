@@ -1,4 +1,4 @@
-/* ===== CamShare — Phase 2: App Logic ===== */
+/* ===== CamShare — Phase 3: App Logic ===== */
 
 (function () {
   'use strict';
@@ -11,6 +11,7 @@
     currentStep: 0,
     photoData: null,
     compositeData: null,
+    compositeBlob: null,
   };
 
   // ── DOM Cache ──────────────────────────────────────────
@@ -27,11 +28,19 @@
   var btnShare = document.getElementById('btn-share');
   var btnRestart = document.getElementById('btn-restart');
   var btnRestartFinal = document.getElementById('btn-restart-final');
+  var btnWebShare = document.getElementById('btn-web-share');
+  var btnDownload = document.getElementById('btn-download');
 
   var inputName = document.getElementById('input-name');
   var inputAge = document.getElementById('input-age');
   var nameError = document.getElementById('name-error');
   var genderBtns = document.querySelectorAll('.gender-btn');
+
+  // Composite elements
+  var compositeLoading = document.getElementById('composite-loading');
+  var compositeImg = document.getElementById('composite-img');
+  var shareImg = document.getElementById('share-img');
+  var shareHint = document.getElementById('share-hint');
 
   // ── Step Navigation ────────────────────────────────────
   function goToStep(n) {
@@ -75,9 +84,96 @@
         }
       }
 
+      if (n === 3) {
+        // Entering composite step
+        generateAndShowComposite();
+      }
+
+      if (n === 4) {
+        // Entering share step
+        setupShareStep();
+      }
+
       // Push history state
       history.pushState({ step: n }, '', '#step-' + n);
     }, 200);
+  }
+
+  // ── Generate composite ──────────────────────────────────
+  function generateAndShowComposite() {
+    if (!window.CamComposite) return;
+    if (!state.photoData) return;
+
+    // Show loading, hide image
+    if (compositeLoading) compositeLoading.style.display = 'flex';
+    if (compositeImg) compositeImg.style.display = 'none';
+    btnShare.disabled = true;
+
+    window.CamComposite.generateComposite(state.photoData, {
+      name: state.name,
+      gender: state.gender || '',
+      age: state.age,
+    })
+    .then(function (blob) {
+      state.compositeBlob = blob;
+
+      // Create preview URL
+      var url = URL.createObjectURL(blob);
+      state.compositeData = url;
+
+      // Show image, hide loading
+      if (compositeImg) {
+        compositeImg.src = url;
+        compositeImg.style.display = 'block';
+      }
+      if (compositeLoading) compositeLoading.style.display = 'none';
+
+      // Enable share button
+      btnShare.disabled = false;
+    })
+    .catch(function (err) {
+      console.error('Composite generation failed:', err);
+
+      // Show error in composite area
+      if (compositeLoading) {
+        compositeLoading.innerHTML = '<p class="text-red-400 text-sm">生成失敗，請重試</p>';
+      }
+    });
+  }
+
+  // ── Setup share step ────────────────────────────────────
+  function setupShareStep() {
+    if (!state.compositeBlob) return;
+
+    // Show composite image in share step
+    if (shareImg) {
+      shareImg.src = state.compositeData;
+    }
+
+    // Determine share method
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isWebViewBrowser = window.CamComposite && window.CamComposite.isWebView();
+    var canWebShare = window.CamComposite && window.CamComposite.isWebShareSupported();
+
+    // Show/hide web share button
+    // iOS Safari doesn't support sharing files via Web Share API
+    // WebView browsers can't use Web Share API
+    if (btnWebShare) {
+      if (canWebShare && !isIOS && !isWebViewBrowser) {
+        btnWebShare.style.display = 'block';
+      } else {
+        btnWebShare.style.display = 'none';
+      }
+    }
+
+    // Show iOS/WebView hint
+    if (shareHint) {
+      if (isIOS || isWebViewBrowser) {
+        shareHint.style.display = 'block';
+      } else {
+        shareHint.style.display = 'none';
+      }
+    }
   }
 
   // ── Validation ──────────────────────────────────────────
@@ -103,6 +199,7 @@
     state.age = null;
     state.photoData = null;
     state.compositeData = null;
+    state.compositeBlob = null;
 
     inputName.value = '';
     inputAge.value = '';
@@ -112,6 +209,20 @@
     genderBtns.forEach(function (btn) {
       btn.classList.remove('selected');
     });
+
+    // Reset composite UI
+    if (compositeImg) {
+      if (compositeImg.src) URL.revokeObjectURL(compositeImg.src);
+      compositeImg.src = '';
+      compositeImg.style.display = 'none';
+    }
+    if (shareImg) {
+      shareImg.src = '';
+    }
+    if (compositeLoading) {
+      compositeLoading.style.display = 'flex';
+    }
+    if (btnShare) btnShare.disabled = true;
   }
 
   // ── XSS-safe text setter ───────────────────────────────
@@ -119,7 +230,7 @@
     element.textContent = text;
   }
 
-  // ── Gender Button Group ────────────────────────────────
+  // ── Gender Button Group ─────────────────────────────────
   function selectGender(gender) {
     state.gender = gender;
 
@@ -204,10 +315,34 @@
     goToStep(0);
   });
 
-  // Step 3 → Share
+  // Step 3 → Share (go to step 4)
   btnShare.addEventListener('click', function () {
     goToStep(4);
   });
+
+  // Step 4 → Web Share
+  if (btnWebShare) {
+    btnWebShare.addEventListener('click', function () {
+      if (state.compositeBlob && window.CamComposite) {
+        window.CamComposite.shareComposite(state.compositeBlob)
+          .then(function (result) {
+            // Share completed or cancelled
+          })
+          .catch(function () {
+            // Fallback already handled in shareComposite
+          });
+      }
+    });
+  }
+
+  // Step 4 → Download
+  if (btnDownload) {
+    btnDownload.addEventListener('click', function () {
+      if (state.compositeBlob && window.CamComposite) {
+        window.CamComposite.downloadComposite(state.compositeBlob);
+      }
+    });
+  }
 
   // Step 4 → Restart
   btnRestartFinal.addEventListener('click', function () {
@@ -241,6 +376,11 @@
     if (targetStep === 2 && window.CamCamera) {
       window.CamCamera.initCamera();
     }
+
+    // Re-generate composite if going back to step 3
+    if (targetStep === 3 && state.photoData) {
+      generateAndShowComposite();
+    }
   });
 
   // ── Initialize ─────────────────────────────────────────
@@ -257,5 +397,10 @@
 
   // Set initial history state
   history.replaceState({ step: 0 }, '', '#step-0');
+
+  // Preload font early
+  if (window.CamComposite && window.CamComposite.generateComposite) {
+    // Font preload happens inside composite.js
+  }
 
 })();

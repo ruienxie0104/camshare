@@ -179,22 +179,23 @@
       <div class="text-center">
         <h2 class="text-2xl font-bold text-blue-900 mb-6">你的尋人啟事</h2>
 
-        <!-- Composite placeholder -->
-        <div class="composite-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
-          <div class="text-center text-gray-400">
-            <svg class="w-12 h-12 mx-auto mb-2 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="text-sm">正在生成你的尋人啟事</p>
+        <!-- Composite result area -->
+        <div class="composite-area relative">
+          <!-- Loading spinner -->
+          <div id="composite-loading" class="composite-loading">
+            <div class="composite-spinner"></div>
+            <p class="text-sm text-gray-500 mt-3">正在生成你的尋人啟事</p>
           </div>
+
+          <!-- Result image -->
+          <img id="composite-img" class="composite-img" src="" alt="你的尋人啟事" style="display:none;" />
         </div>
 
-        <div class="flex gap-3">
+        <div class="flex gap-3 mt-6">
           <button id="btn-restart" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">
             重新開始
           </button>
-          <button id="btn-share" class="btn-primary flex-1 py-3 rounded-lg font-semibold">
+          <button id="btn-share" class="btn-primary flex-1 py-3 rounded-lg font-semibold" disabled>
             分享
           </button>
         </div>
@@ -206,17 +207,32 @@
       <div class="text-center">
         <h2 class="text-2xl font-bold text-blue-900 mb-6">分享你的尋人啟事</h2>
 
-        <!-- Share placeholder -->
-        <div class="share-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
-          <div class="text-center text-gray-400">
-            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        <!-- Final composite image -->
+        <img id="share-img" class="composite-img" src="" alt="你的尋人啟事" />
+
+        <!-- Action buttons -->
+        <div class="share-actions mt-6">
+          <button id="btn-web-share" class="btn-primary w-full py-3 rounded-lg font-semibold" style="display:none;">
+            <svg class="inline w-5 h-5 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
             </svg>
-            <p class="text-sm">分享功能即將上線</p>
-          </div>
+            分享圖片
+          </button>
+
+          <button id="btn-download" class="btn-secondary w-full py-3 rounded-lg font-semibold">
+            <svg class="inline w-5 h-5 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            下載圖片
+          </button>
         </div>
 
-        <button id="btn-restart-final" class="btn-secondary w-full py-3 rounded-lg font-semibold">
+        <!-- iOS / WebView hint -->
+        <p id="share-hint" class="share-hint text-sm text-gray-500 mt-3" style="display:none;">
+          💡 長按圖片可儲存到相簿
+        </p>
+
+        <button id="btn-restart-final" class="btn-secondary w-full py-3 rounded-lg font-semibold mt-3">
           重新開始
         </button>
       </div>
@@ -225,6 +241,7 @@
   </div>
 
   <script src="js/camera.js"></script>
+  <script src="js/composite.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
