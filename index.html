@@ -9,6 +9,16 @@
 </head>
 <body class="bg-white min-h-screen flex items-center justify-center">
 
+  <!-- Landscape lock overlay -->
+  <div id="landscape-overlay">
+    <svg class="landscape-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="7" width="16" height="10" rx="2" transform="rotate(-90 12 12)"/>
+      <line x1="12" y1="17" x2="12" y2="17.01"/>
+    </svg>
+    <p class="landscape-text">請將手機轉為直屏使用</p>
+    <p class="landscape-subtext">此活動頁面僅支援直屏模式</p>
+  </div>
+
   <div id="app" class="w-full max-w-md mx-auto px-4 py-6 relative">
 
     <!-- Step 0: 進入頁 -->
@@ -185,6 +195,7 @@
           <div id="composite-loading" class="composite-loading">
             <div class="composite-spinner"></div>
             <p class="text-sm text-gray-500 mt-3">正在生成你的尋人啟事</p>
+            <p class="loading-text">正在生成...</p>
           </div>
 
           <!-- Result image -->
@@ -208,7 +219,7 @@
         <h2 class="text-2xl font-bold text-blue-900 mb-6">分享你的尋人啟事</h2>
 
         <!-- Final composite image -->
-        <img id="share-img" class="composite-img" src="" alt="你的尋人啟事" />
+        <img id="share-img" class="composite-img scale-up" src="" alt="你的尋人啟事" />
 
         <!-- Action buttons -->
         <div class="share-actions mt-6">

@@ -1,4 +1,4 @@
-/* ===== CamShare — Phase 3: Canvas Composite Module ===== */
+/* ===== CamShare — Phase 4: Canvas Composite Module ===== */
 
 (function () {
   'use strict';
@@ -62,6 +62,7 @@
   }
 
   // ── Generate composite ──────────────────────────────────
+  // Returns { jpeg: Blob, png: Blob } for sharing (JPEG) and download (PNG)
   function generateComposite(photoData, userInfo) {
     return preloadFont()
       .then(function () { return ensureFonts(); })
@@ -163,13 +164,11 @@
 
             var drawW, drawH, drawX, drawY;
             if (imgAspect > ellipseAspect) {
-              // Image is wider — fit height, crop width
               drawH = ellipseH;
               drawW = ellipseH * imgAspect;
               drawX = photoCenterX - drawW / 2;
               drawY = photoCenterY - drawH / 2;
             } else {
-              // Image is taller — fit width, crop height
               drawW = ellipseW;
               drawH = drawW / imgAspect;
               drawX = photoCenterX - drawW / 2;
@@ -240,19 +239,24 @@
             ctx.fillStyle = COLORS.border;
             ctx.fill();
 
-            // Output as PNG blob
-            canvas.toBlob(function (blob) {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(new Error('Canvas toBlob failed'));
+            // Output both JPEG (for sharing, quality 0.85) and PNG (for download, high quality)
+            canvas.toBlob(function (jpegBlob) {
+              if (!jpegBlob) {
+                reject(new Error('Canvas toBlob (JPEG) failed'));
+                return;
               }
-            }, 'image/png');
+              canvas.toBlob(function (pngBlob) {
+                if (!pngBlob) {
+                  reject(new Error('Canvas toBlob (PNG) failed'));
+                  return;
+                }
+                resolve({ jpeg: jpegBlob, png: pngBlob });
+              }, 'image/png');
+            }, 'image/jpeg', 0.85);
           };
 
           photoImg.onerror = function () {
             // Even if photo fails, draw the poster without photo
-            // Draw empty ellipse area
             ctx.strokeStyle = COLORS.lineGray;
             ctx.lineWidth = 2;
             ctx.setLineDash([6, 4]);
@@ -261,14 +265,20 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Still output the poster
-            canvas.toBlob(function (blob) {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(new Error('Canvas toBlob failed'));
+            // Output both formats even for fallback
+            canvas.toBlob(function (jpegBlob) {
+              if (!jpegBlob) {
+                reject(new Error('Canvas toBlob (JPEG) failed'));
+                return;
               }
-            }, 'image/png');
+              canvas.toBlob(function (pngBlob) {
+                if (!pngBlob) {
+                  reject(new Error('Canvas toBlob (PNG) failed'));
+                  return;
+                }
+                resolve({ jpeg: jpegBlob, png: pngBlob });
+              }, 'image/png');
+            }, 'image/jpeg', 0.85);
           };
 
           // Load photo from blob
@@ -300,9 +310,11 @@
     ctx.closePath();
   }
 
-  // ── Download composite ──────────────────────────────────
-  function downloadComposite(blob) {
-    var url = URL.createObjectURL(blob);
+  // ── Download composite (PNG — higher quality) ────────────
+  function downloadComposite(result) {
+    // result is { jpeg, png } — use PNG for download
+    var pngBlob = (result && result.png) ? result.png : result;
+    var url = URL.createObjectURL(pngBlob);
     var a = document.createElement('a');
     a.href = url;
     a.download = 'camshare-尋人啟事.png';
@@ -316,11 +328,14 @@
     }, 1000);
   }
 
-  // ── Share composite ─────────────────────────────────────
-  function shareComposite(blob) {
+  // ── Share composite (JPEG — smaller size for sharing) ────
+  function shareComposite(result) {
+    // result is { jpeg, png } — use JPEG for sharing (smaller file)
+    var jpegBlob = (result && result.jpeg) ? result.jpeg : result;
+
     // If Web Share API is supported and can share files
     if (isWebShareSupported()) {
-      var file = new File([blob], 'camshare-尋人啟事.png', { type: 'image/png' });
+      var file = new File([jpegBlob], 'camshare-尋人啟事.jpg', { type: 'image/jpeg' });
       var shareData = {
         title: '我的尋人啟事',
         text: '看看我的 CamShare 尋人啟事！',
@@ -338,15 +353,15 @@
             if (err.name === 'AbortError') {
               return 'cancelled';
             }
-            // Fallback to download
-            downloadComposite(blob);
+            // Fallback to download (PNG)
+            downloadComposite(result);
             return 'downloaded';
           });
       }
     }
 
-    // Fallback: download
-    downloadComposite(blob);
+    // Fallback: download (PNG)
+    downloadComposite(result);
     return Promise.resolve('downloaded');
   }
 
@@ -358,19 +373,12 @@
   // ── WebView detection ──────────────────────────────────
   function isWebView() {
     var ua = navigator.userAgent || navigator.vendor || '';
-    // LINE in-app browser
     if (/Line\//i.test(ua)) return true;
-    // Facebook in-app browser
     if (/FBAN|FBAV|FBBV/i.test(ua)) return true;
-    // Facebook Messenger
     if (/Messenger/i.test(ua)) return true;
-    // Instagram in-app browser
     if (/Instagram/i.test(ua)) return true;
-    // WeChat
     if (/MicroMessenger/i.test(ua)) return true;
-    // Generic WebView indicators
     if (/wv/i.test(ua)) return true;
-    // iOS WebView (not Safari)
     if (/iPhone|iPad|iPod/.test(ua) && !/Safari/i.test(ua)) return true;
     return false;
   }
@@ -378,15 +386,6 @@
   // ── Create composite preview URL ───────────────────────
   function createPreviewURL(blob) {
     return URL.createObjectURL(blob);
-  }
-
-  // ── Create JPEG blob for sharing (smaller size) ─────────
-  function createShareBlob(canvas) {
-    return new Promise(function (resolve) {
-      canvas.toBlob(function (blob) {
-        resolve(blob);
-      }, 'image/jpeg', 0.85);
-    });
   }
 
   // ── Expose API ──────────────────────────────────────────

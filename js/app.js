@@ -1,7 +1,22 @@
-/* ===== CamShare — Phase 3: App Logic ===== */
+/* ===== CamShare — Phase 4: App Logic ===== */
 
 (function () {
   'use strict';
+
+  // ── Analytics ──────────────────────────────────────────
+  function track(event, data) {
+    var payload = {
+      event: event,
+      timestamp: Date.now(),
+    };
+    if (data) {
+      Object.keys(data).forEach(function (key) {
+        payload[key] = data[key];
+      });
+    }
+    console.log('[CamShare]', JSON.stringify(payload));
+    // TODO: Replace with GA or other analytics provider
+  }
 
   // ── State ──────────────────────────────────────────────
   var state = {
@@ -42,61 +57,102 @@
   var shareImg = document.getElementById('share-img');
   var shareHint = document.getElementById('share-hint');
 
-  // ── Step Navigation ────────────────────────────────────
+  // ── Landscape Lock ─────────────────────────────────────
+  var landscapeOverlay = document.getElementById('landscape-overlay');
+
+  function checkOrientation() {
+    if (!landscapeOverlay) return;
+    var isMobile = window.innerWidth <= 768;
+    var isLandscape = window.innerWidth > window.innerHeight;
+
+    if (isMobile && isLandscape) {
+      landscapeOverlay.classList.add('visible');
+    } else {
+      landscapeOverlay.classList.remove('visible');
+    }
+  }
+
+  // Listen for orientation changes
+  if (landscapeOverlay) {
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', checkOrientation);
+    }
+  }
+
+  // ── Step Navigation (with slide animations) ─────────────
+  var isAnimating = false;
+
   function goToStep(n) {
     if (n < 0 || n > 4) return;
+    if (isAnimating) return;
 
-    var current = steps[state.currentStep];
-    var target = steps[n];
+    var currentIdx = state.currentStep;
+    var targetIdx = n;
+    var isForward = targetIdx > currentIdx;
+
+    var current = steps[currentIdx];
+    var target = steps[targetIdx];
+
+    // Track step enter
+    track('step_enter', { step: targetIdx, from: currentIdx });
 
     // Cleanup when leaving a step
-    if (state.currentStep === 2 && n !== 2) {
-      // Leaving camera step
+    if (currentIdx === 2 && targetIdx !== 2) {
       if (window.CamCamera) {
         window.CamCamera.stopCamera();
       }
     }
 
-    // Fade out current
-    current.classList.remove('active');
-    current.classList.add('fade-out');
+    // Start animation
+    isAnimating = true;
+
+    // Slide out current
+    current.classList.remove('active', 'slide-in-right', 'slide-in-left');
+    current.classList.add(isForward ? 'slide-out-left' : 'slide-out-right');
+
+    var animDuration = 250; // match slide-out duration
 
     setTimeout(function () {
-      current.classList.remove('fade-out');
+      current.classList.remove('slide-out-left', 'slide-out-right');
       current.style.display = 'none';
 
-      // Fade in target
+      // Slide in target
       target.style.display = 'block';
-      target.classList.add('fade-in');
+      target.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-right', 'slide-in-left');
+      target.classList.add(isForward ? 'slide-in-right' : 'slide-in-left');
 
       requestAnimationFrame(function () {
-        target.classList.remove('fade-in');
         target.classList.add('active');
       });
 
-      state.currentStep = n;
+      var slideInDuration = 320;
+      setTimeout(function () {
+        target.classList.remove('slide-in-right', 'slide-in-left');
+        isAnimating = false;
+      }, slideInDuration);
+
+      state.currentStep = targetIdx;
 
       // Setup when entering a step
-      if (n === 2) {
-        // Entering camera step
+      if (targetIdx === 2) {
         if (window.CamCamera) {
           window.CamCamera.initCamera();
         }
       }
 
-      if (n === 3) {
-        // Entering composite step
+      if (targetIdx === 3) {
         generateAndShowComposite();
       }
 
-      if (n === 4) {
-        // Entering share step
+      if (targetIdx === 4) {
         setupShareStep();
       }
 
       // Push history state
-      history.pushState({ step: n }, '', '#step-' + n);
-    }, 200);
+      history.pushState({ step: targetIdx }, '', '#step-' + targetIdx);
+    }, animDuration);
   }
 
   // ── Generate composite ──────────────────────────────────
@@ -105,8 +161,16 @@
     if (!state.photoData) return;
 
     // Show loading, hide image
-    if (compositeLoading) compositeLoading.style.display = 'flex';
-    if (compositeImg) compositeImg.style.display = 'none';
+    if (compositeLoading) {
+      compositeLoading.style.display = 'flex';
+      // Update loading text
+      var loadingText = compositeLoading.querySelector('.loading-text');
+      if (loadingText) loadingText.textContent = '正在生成...';
+    }
+    if (compositeImg) {
+      compositeImg.classList.remove('scale-up');
+      compositeImg.style.display = 'none';
+    }
     btnShare.disabled = true;
 
     window.CamComposite.generateComposite(state.photoData, {
@@ -114,22 +178,29 @@
       gender: state.gender || '',
       age: state.age,
     })
-    .then(function (blob) {
-      state.compositeBlob = blob;
+    .then(function (result) {
+      // result = { jpeg: Blob, png: Blob }
+      state.compositeBlob = result;  // Store both blobs
 
-      // Create preview URL
-      var url = URL.createObjectURL(blob);
+      // Create preview URL from JPEG (smaller for display)
+      var url = URL.createObjectURL(result.jpeg);
       state.compositeData = url;
 
-      // Show image, hide loading
+      // Show image with scale-up animation, hide loading
       if (compositeImg) {
         compositeImg.src = url;
         compositeImg.style.display = 'block';
+        // Trigger scale-up animation
+        requestAnimationFrame(function () {
+          compositeImg.classList.add('scale-up');
+        });
       }
       if (compositeLoading) compositeLoading.style.display = 'none';
 
       // Enable share button
       btnShare.disabled = false;
+
+      track('composite_complete');
     })
     .catch(function (err) {
       console.error('Composite generation failed:', err);
@@ -145,9 +216,9 @@
   function setupShareStep() {
     if (!state.compositeBlob) return;
 
-    // Show composite image in share step
+    // Show composite image in share step (use JPEG for display — smaller)
     if (shareImg) {
-      shareImg.src = state.compositeData;
+      shareImg.src = URL.createObjectURL(state.compositeBlob.jpeg);
     }
 
     // Determine share method
@@ -156,8 +227,6 @@
     var canWebShare = window.CamComposite && window.CamComposite.isWebShareSupported();
 
     // Show/hide web share button
-    // iOS Safari doesn't support sharing files via Web Share API
-    // WebView browsers can't use Web Share API
     if (btnWebShare) {
       if (canWebShare && !isIOS && !isWebViewBrowser) {
         btnWebShare.style.display = 'block';
@@ -214,6 +283,7 @@
     if (compositeImg) {
       if (compositeImg.src) URL.revokeObjectURL(compositeImg.src);
       compositeImg.src = '';
+      compositeImg.classList.remove('scale-up');
       compositeImg.style.display = 'none';
     }
     if (shareImg) {
@@ -272,6 +342,7 @@
   // Step 1 → Next
   btnNextStep2.addEventListener('click', function () {
     if (!validateStep1()) return;
+    track('form_complete', { name: state.name, gender: state.gender, age: state.age });
     goToStep(2);
   });
 
@@ -285,8 +356,8 @@
       if (blob) {
         state.photoData = blob;
         window.CamCamera.showPreview(blob);
+        track('photo_captured');
       } else {
-        // If capture failed, re-show capture button
         btnCapture.style.display = 'flex';
       }
     }).catch(function () {
@@ -297,6 +368,7 @@
   // Step 2 → Confirm photo
   btnConfirm.addEventListener('click', function () {
     if (state.photoData) {
+      track('photo_confirmed');
       goToStep(3);
     }
   });
@@ -304,6 +376,7 @@
   // Step 2 → Retake photo
   btnRetake.addEventListener('click', function () {
     state.photoData = null;
+    track('photo_retaken');
     if (window.CamCamera) {
       window.CamCamera.resumeCamera();
     }
@@ -311,6 +384,7 @@
 
   // Step 3 → Restart
   btnRestart.addEventListener('click', function () {
+    track('restart', { from: 3 });
     resetState();
     goToStep(0);
   });
@@ -324,12 +398,17 @@
   if (btnWebShare) {
     btnWebShare.addEventListener('click', function () {
       if (state.compositeBlob && window.CamComposite) {
+        track('share_attempt', { method: 'webshare' });
         window.CamComposite.shareComposite(state.compositeBlob)
-          .then(function (result) {
-            // Share completed or cancelled
+          .then(function (shareResult) {
+            if (shareResult === 'shared') {
+              track('share_success', { method: 'webshare' });
+            } else {
+              track('share_fallback', { method: 'download' });
+            }
           })
           .catch(function () {
-            // Fallback already handled in shareComposite
+            track('share_fallback', { method: 'download' });
           });
       }
     });
@@ -339,13 +418,16 @@
   if (btnDownload) {
     btnDownload.addEventListener('click', function () {
       if (state.compositeBlob && window.CamComposite) {
+        track('share_attempt', { method: 'download' });
         window.CamComposite.downloadComposite(state.compositeBlob);
+        track('share_success', { method: 'download' });
       }
     });
   }
 
   // Step 4 → Restart
   btnRestartFinal.addEventListener('click', function () {
+    track('restart', { from: 4 });
     resetState();
     goToStep(0);
   });
@@ -364,8 +446,8 @@
       }
     }
 
-    // Directly set without animation for back navigation
-    steps[state.currentStep].classList.remove('active');
+    // Directly set without slide animation for back navigation
+    steps[state.currentStep].classList.remove('active', 'slide-in-right', 'slide-in-left', 'scale-up');
     steps[state.currentStep].style.display = 'none';
 
     steps[targetStep].style.display = 'block';
@@ -383,6 +465,27 @@
     }
   });
 
+  // ── Pulse animation for capture button ──────────────────
+  // The camera module shows/hides btnCapture; we add pulse when visible
+  var captureObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        var target = mutation.target;
+        if (target === btnCapture) {
+          if (btnCapture.style.display !== 'none' && btnCapture.style.display !== '') {
+            btnCapture.classList.add('pulse');
+          } else {
+            btnCapture.classList.remove('pulse');
+          }
+        }
+      }
+    });
+  });
+
+  if (btnCapture) {
+    captureObserver.observe(btnCapture, { attributes: true });
+  }
+
   // ── Initialize ─────────────────────────────────────────
   // Ensure only step-0 is visible on load
   steps.forEach(function (step, idx) {
@@ -398,9 +501,7 @@
   // Set initial history state
   history.replaceState({ step: 0 }, '', '#step-0');
 
-  // Preload font early
-  if (window.CamComposite && window.CamComposite.generateComposite) {
-    // Font preload happens inside composite.js
-  }
+  // Track initial step
+  track('step_enter', { step: 0 });
 
 })();

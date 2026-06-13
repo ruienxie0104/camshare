@@ -1,46 +1,80 @@
 /* ===== CamShare — Phase 1 Styles ===== */
 
-/* Step transitions */
+/* Step transitions — slide-based */
 .step-section {
   display: none;
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(0);
+  transition: none;
 }
 
 .step-section.active {
   display: block;
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
-.step-section.fade-in {
-  animation: fadeIn 0.3s ease forwards;
+/* Slide in from the right (forward navigation) */
+.step-section.slide-in-right {
+  animation: slideInRight 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-.step-section.fade-out {
-  animation: fadeOut 0.2s ease forwards;
+/* Slide in from the left (backward navigation) */
+.step-section.slide-in-left {
+  animation: slideInLeft 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-@keyframes fadeIn {
+/* Slide out to the left (forward navigation — current leaves left) */
+.step-section.slide-out-left {
+  animation: slideOutLeft 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* Slide out to the right (backward navigation — current leaves right) */
+.step-section.slide-out-right {
+  animation: slideOutRight 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateX(60px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
-@keyframes fadeOut {
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
   from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateX(-60px);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px);
   }
 }
 
@@ -76,7 +110,7 @@
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .btn-primary:disabled {
@@ -98,7 +132,7 @@
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 /* Input fields */
@@ -224,6 +258,18 @@ input[type="number"] {
   font-weight: 500;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   letter-spacing: 2px;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes guide-pulse {
@@ -289,6 +335,20 @@ input[type="number"] {
 
 .btn-capture:active {
   transform: scale(0.95);
+}
+
+/* Pulse animation for capture button */
+.btn-capture.pulse {
+  animation: capturePulse 2s ease-in-out infinite;
+}
+
+@keyframes capturePulse {
+  0%, 100% {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(30, 58, 95, 0.15), 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
 }
 
 /* Preview buttons wrapper */
@@ -385,6 +445,12 @@ input[type="number"] {
   z-index: 5;
 }
 
+.composite-loading .loading-text {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
 .composite-spinner {
   width: 40px;
   height: 40px;
@@ -407,4 +473,104 @@ input[type="number"] {
 .share-hint {
   text-align: center;
   line-height: 1.5;
+}
+
+/* Scale-up animation for composite result */
+.composite-img.scale-up {
+  animation: scaleUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Share page image shadow */
+#share-img {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Button disabled → enabled transition */
+.btn-primary {
+  transition: background-color 0.25s ease, opacity 0.25s ease, transform 0.1s ease, box-shadow 0.25s ease;
+}
+
+.btn-primary:disabled {
+  box-shadow: none;
+}
+
+.btn-primary:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.25);
+}
+
+/* ===== Phase 4: Landscape Lock Overlay ===== */
+
+#landscape-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: #1e3a5f;
+  color: #fff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+#landscape-overlay.visible {
+  display: flex;
+}
+
+.landscape-icon {
+  width: 64px;
+  height: 64px;
+  animation: rotatePhone 1.5s ease-in-out infinite;
+}
+
+@keyframes rotatePhone {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-90deg);
+  }
+  75% {
+    transform: rotate(-90deg);
+  }
+}
+
+.landscape-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.landscape-subtext {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+/* Only show landscape overlay on mobile */
+@media (orientation: landscape) and (max-width: 768px) {
+  #landscape-overlay {
+    display: flex;
+  }
+}
+
+@media (orientation: portrait), (min-width: 769px) {
+  #landscape-overlay {
+    display: none !important;
+  }
 }
