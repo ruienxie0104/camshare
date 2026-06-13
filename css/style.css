@@ -1,0 +1,148 @@
+/* ===== CamShare — Phase 1 Styles ===== */
+
+/* Step transitions */
+.step-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.step-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step-section.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.step-section.fade-out {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Gender button group */
+.gender-btn {
+  background-color: #fff;
+  color: #4b5563;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gender-btn:hover {
+  border-color: #93c5fd;
+  background-color: #eff6ff;
+}
+
+.gender-btn.selected {
+  background-color: #1e3a5f;
+  border-color: #1e3a5f;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.3);
+}
+
+/* Primary button */
+.btn-primary {
+  background-color: #1e3a5f;
+  color: #fff;
+  transition: background-color 0.2s, opacity 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #2a4f7a;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Secondary button */
+.btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Input fields */
+.input-field {
+  background-color: #f9fafb;
+  font-size: 1rem;
+}
+
+.input-field:focus {
+  background-color: #fff;
+}
+
+/* Mobile-first layout */
+#app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Mockup / placeholder areas */
+.mockup-preview,
+.camera-placeholder,
+.composite-placeholder,
+.share-placeholder {
+  border: 2px dashed #d1d5db;
+}
+
+/* Safe area padding for notched phones */
+@supports (padding: max(0px)) {
+  #app {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Remove number input spinners for cleaner look */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

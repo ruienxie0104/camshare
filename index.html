@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CamShare — 拍下你的尋人啟事</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-white min-h-screen flex items-center justify-center">
+
+  <div id="app" class="w-full max-w-md mx-auto px-4 py-6 relative">
+
+    <!-- Step 0: 進入頁 -->
+    <section id="step-0" class="step-section active">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-blue-900 mb-2">CamShare</h1>
+        <p class="text-lg text-gray-500 mb-8">拍下你的尋人啟事</p>
+
+        <!-- Mockup preview placeholder -->
+        <div class="mockup-preview bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-8 flex items-center justify-center">
+          <div class="text-center text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm">你的尋人啟事預覽</p>
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold">
+          開始
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 1: 輸入資訊 -->
+    <section id="step-1" class="step-section">
+      <div>
+        <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">填寫你的資訊</h2>
+
+        <!-- 名字 -->
+        <div class="mb-5">
+          <label for="input-name" class="block text-sm font-medium text-gray-700 mb-1">名字 <span class="text-red-400">*</span></label>
+          <input
+            type="text"
+            id="input-name"
+            maxlength="20"
+            required
+            placeholder="輸入你的名字"
+            class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+          >
+          <p id="name-error" class="text-red-400 text-xs mt-1 hidden">請輸入名字</p>
+        </div>
+
+        <!-- 性別 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">性別</label>
+          <div id="gender-group" class="flex gap-3">
+            <button type="button" data-gender="男" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+              👨 男
+            </button>
+            <button type="button" data-gender="女" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+              👩 女
+            </button>
+            <button type="button" data-gender="不指定" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+              🌀 不指定
+            </button>
+          </div>
+        </div>
+
+        <!-- 年齡 -->
+        <div class="mb-8">
+          <label for="input-age" class="block text-sm font-medium text-gray-700 mb-1">年齡</label>
+          <input
+            type="number"
+            id="input-age"
+            min="1"
+            max="120"
+            placeholder="輸入年齡"
+            class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+          >
+        </div>
+
+        <button id="btn-next-step2" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold" disabled>
+          下一步
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 2: 拍照 -->
+    <section id="step-2" class="step-section">
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">拍照</h2>
+
+        <!-- Camera placeholder -->
+        <div class="camera-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
+          <div class="text-center text-gray-400">
+            <svg class="w-16 h-16 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <p class="text-sm">相機將在此開啟</p>
+          </div>
+        </div>
+
+        <p class="text-gray-500 mb-6">即將開啟相機，在尋人啟事框架中拍下你的照片</p>
+
+        <button id="btn-capture" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold">
+          繼續
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 3: 生成結果 -->
+    <section id="step-3" class="step-section">
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">你的尋人啟事</h2>
+
+        <!-- Composite placeholder -->
+        <div class="composite-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
+          <div class="text-center text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-2 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-sm">正在生成你的尋人啟事</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button id="btn-restart" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">
+            重新開始
+          </button>
+          <button id="btn-share" class="btn-primary flex-1 py-3 rounded-lg font-semibold">
+            分享
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: 分享 -->
+    <section id="step-4" class="step-section">
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">分享你的尋人啟事</h2>
+
+        <!-- Share placeholder -->
+        <div class="share-placeholder bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-6 flex items-center justify-center">
+          <div class="text-center text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            <p class="text-sm">分享功能即將上線</p>
+          </div>
+        </div>
+
+        <button id="btn-restart-final" class="btn-secondary w-full py-3 rounded-lg font-semibold">
+          重新開始
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
