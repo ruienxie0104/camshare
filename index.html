@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>CamShare — 拍下你的尋人啟事</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +55,7 @@
     <!-- Step 0: 進入頁 -->
     <section id="step-0" class="step-section active">
       <!-- Top/Center Content -->
-      <div class="w-full flex flex-col my-auto py-4 text-center">
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
         <h1 class="text-4xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent tracking-tight mb-1">CamShare</h1>
         <p class="text-xs text-slate-400 tracking-wide mb-6">專屬於你的復古懸賞海報</p>
 
@@ -90,7 +90,7 @@
     <!-- Step 1: 輸入資訊 -->
     <section id="step-1" class="step-section">
       <!-- Top/Center Content -->
-      <div class="w-full flex flex-col my-auto py-6">
+      <div class="flex-1 flex flex-col justify-center py-2">
         <h2 class="text-xl font-bold text-slate-100 mb-4 text-center tracking-wide">填寫懸賞資訊</h2>
 
         <!-- 名字 -->
@@ -148,7 +148,7 @@
     <!-- Step 2: 拍照 -->
     <section id="step-2" class="step-section">
       <!-- Top/Center Content -->
-      <div class="w-full flex flex-col my-auto py-6 text-center">
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
         <h2 class="text-xl font-bold text-slate-100 mb-3 tracking-wide">擺出你的最佳表情</h2>
 
         <!-- Camera container -->
@@ -245,8 +245,8 @@
     <!-- Step 3: 生成結果 -->
     <section id="step-3" class="step-section">
       <!-- Top/Center Content -->
-      <div class="w-full flex flex-col my-auto py-6 text-center">
-        <h2 class="text-xl font-bold text-slate-100 mb-4 tracking-wide">生成結果</h2>
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
+        <h2 class="text-xl font-bold text-slate-100 mb-3 tracking-wide">生成結果</h2>
 
         <!-- Composite result area -->
         <div class="composite-area relative border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
@@ -284,14 +284,13 @@
     </section>
 
     <!-- Step 4: 分享 -->
-    <section id="step-4" class="step-section flex flex-col px-4 pb-4">
-      <!-- Top/Center Content -->
-      <h2 class="text-xl font-bold text-slate-100 mb-2 mt-4 text-center tracking-wide flex-shrink-0">分享與儲存</h2>
+    <section id="step-4" class="step-section">
+      <!-- 單一 div 包住全部內容，避免 flex:1 擴展造成空白 -->
+      <div class="flex flex-col items-center w-full py-3 gap-3">
+        <h2 class="text-xl font-bold text-slate-100 tracking-wide flex-shrink-0">分享與儲存</h2>
 
-      <!-- Flex-1 wrapper for poster so it scales naturally without huge gaps -->
-      <div class="flex-1 w-full flex items-center justify-center min-h-0 py-2">
         <!-- 3D Card wrap for final share -->
-        <div class="relative max-w-[280px] h-full aspect-[9/16] mx-auto flex-shrink-0">
+        <div class="relative max-w-[240px] w-full mx-auto aspect-[9/16] max-h-[50dvh] flex-shrink-0">
           <div class="poster-3d-wrap w-full h-full">
             <div class="poster-3d-card w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl" id="share-img-card">
               <!-- Final composite image -->
@@ -300,28 +299,25 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bottom Buttons -->
-      <div class="w-full flex-shrink-0 pt-2 pb-2">
-        <div class="flex gap-3">
-          <button id="btn-download" class="btn-primary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
-            下載高清海報
-          </button>
-          <button id="btn-restart-final" class="btn-secondary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
-            重新製作
-          </button>
-        </div>
-        <div class="mt-3">
+        <!-- Buttons area -->
+        <div class="w-full flex-shrink-0 flex flex-col gap-3">
+          <div class="flex gap-3">
+            <button id="btn-download" class="btn-primary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+              下載高清海報
+            </button>
+            <button id="btn-restart-final" class="btn-secondary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+              重新製作
+            </button>
+          </div>
           <button id="btn-web-share" class="btn-primary-new w-full py-3.5 rounded-xl text-sm font-bold" style="display:none;">
             分享海報
           </button>
+          <!-- iOS / WebView hint -->
+          <p id="share-hint" class="share-hint text-xs text-slate-400 text-center" style="display:none;">
+            💡 提示：長按上方海報，即可儲存至手機相簿
+          </p>
         </div>
-
-        <!-- iOS / WebView hint -->
-        <p id="share-hint" class="share-hint text-xs text-slate-400 mt-2" style="display:none;">
-          💡 提示：長按上方海報，即可儲存至手機相簿
-        </p>
       </div>
     </section>
 

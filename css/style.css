@@ -1,6 +1,13 @@
-html, body {
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  height: -webkit-fill-available;
+  overflow: hidden;
   margin: 0;
   padding: 0;
 }
@@ -19,9 +26,9 @@ body {
 }
 
 #app {
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
-  height: auto;
+  height: 100dvh;
+  height: -webkit-fill-available;
+  min-height: unset;
   width: 100%;
   max-width: 448px;
   margin: 0 auto;
@@ -30,6 +37,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
+  overflow: hidden;
 }
 
 /* Step transitions — slide-based */
@@ -40,12 +48,13 @@ body {
   transition: none;
   flex: 1;
   flex-direction: column;
-  justify-content: flex-start; /* 讓內容從上方開始排，不要硬撐 */
+  justify-content: flex-start;
   height: 100%;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 2rem; /* 確保滑到底部有空間 */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2rem;
 }
 
 .step-section.active {
@@ -67,6 +76,12 @@ body {
   padding-top: 0.75rem;
   width: 100%;
 }
+
+/* Step-4 override: 全部內容在同一個 div，不使用 flex:1 撐開 */
+#step-4 > div:first-child {
+  flex: none;
+}
+
 
 /* Slide in from the right (forward navigation) */
 .step-section.slide-in-right {

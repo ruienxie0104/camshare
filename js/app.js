@@ -359,9 +359,10 @@
     var isWebViewBrowser = window.CamComposite && window.CamComposite.isWebView();
     var canWebShare = window.CamComposite && window.CamComposite.isWebShareSupported();
 
-    // Show/hide web share button
+    // 在支援 Web Share API 且不是 WebView 的環境中顯示分享按鈕
+    // iOS 12+ 的 Safari 完整支援 Web Share API，不再排除
     if (btnWebShare) {
-      if (canWebShare && !isIOS && !isWebViewBrowser) {
+      if (canWebShare && !isWebViewBrowser) {
         btnWebShare.style.display = 'block';
       } else {
         btnWebShare.style.display = 'none';
@@ -537,9 +538,6 @@
 
   // Step 4 → Web Share
   if (btnWebShare) {
-    if (navigator.share) {
-      btnWebShare.style.display = 'block';
-    }
     btnWebShare.addEventListener('click', function () {
       if (state.compositeBlob && window.CamComposite) {
         track('share_attempt', { method: 'webshare' });
@@ -658,5 +656,37 @@
   track('step_enter', { step: 0 });
 
   // Fade in page logic removed since CSS now handles fallback layout securely.
+
+  // ── iOS 鍵盤彈出修正 ──────────────────────────────────
+  // 使用 visualViewport API 偵測鍵盤出現，調整 #app 高度，防止整個畫面被推上去
+  if (window.visualViewport) {
+    var app = document.getElementById('app');
+    var lastViewportHeight = window.visualViewport.height;
+
+    window.visualViewport.addEventListener('resize', function () {
+      if (!app) return;
+      var newHeight = window.visualViewport.height;
+      var diff = lastViewportHeight - newHeight;
+
+      // 判斷鍵盤是否出現（高度縮小超過 100px）
+      if (diff > 100) {
+        // 鍵盤出現：縮小 app 高度，讓畫面不被推出去
+        app.style.height = newHeight + 'px';
+
+        // 捲動使目前焦點的輸入框保持在可視範圍內
+        var activeEl = document.activeElement;
+        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+          setTimeout(function () {
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 150);
+        }
+      } else if (diff < -50) {
+        // 鍵盤收起：恢復 app 高度
+        app.style.height = '';
+      }
+
+      lastViewportHeight = newHeight;
+    });
+  }
 
 })();
