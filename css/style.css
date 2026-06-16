@@ -666,6 +666,8 @@ input[type="number"] {
   z-index: 0;
   opacity: 0.35;
   pointer-events: none;
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden; /* Fix Safari repaint bug */
 }
 
 .aurora-bg::before {
