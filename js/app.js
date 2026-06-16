@@ -655,20 +655,14 @@
   // Track initial step
   track('step_enter', { step: 0 });
 
-  // Wait for Tailwind CSS to compile before hiding loader and showing app
-  function waitForTailwind(callback) {
-    if (getComputedStyle(document.body).display === 'flex') {
-      callback();
-    } else {
-      setTimeout(function() { waitForTailwind(callback); }, 50);
-    }
-  }
-
-  waitForTailwind(function() {
-    var loader = document.getElementById('global-loader');
-    var appContainer = document.getElementById('app');
-    if (loader) loader.classList.add('hidden');
-    if (appContainer) appContainer.classList.add('ready');
+  // App launch animation: show loader for a minimum duration to feel like a native app launch
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var loader = document.getElementById('global-loader');
+      var appContainer = document.getElementById('app');
+      if (loader) loader.classList.add('hidden');
+      if (appContainer) appContainer.classList.add('ready');
+    }, 600);
   });
 
 })();
