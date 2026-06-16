@@ -169,10 +169,37 @@
               drawY = photoCenterY - drawH / 2;
             }
 
-            // Apply Sepia vintage filter on canvas
-            ctx.filter = 'sepia(0.85) contrast(1.1) brightness(0.95)';
-            ctx.drawImage(photoImg, drawX, drawY, drawW, drawH);
-            ctx.filter = 'none'; // reset filter
+            // Apply Sepia vintage filter using offscreen canvas to ensure mobile Safari support
+            var offCanvas = document.createElement('canvas');
+            offCanvas.width = drawW;
+            offCanvas.height = drawH;
+            var offCtx = offCanvas.getContext('2d');
+            offCtx.drawImage(photoImg, 0, 0, drawW, drawH);
+            
+            try {
+              var imgData = offCtx.getImageData(0, 0, drawW, drawH);
+              var data = imgData.data;
+              for (var i = 0; i < data.length; i += 4) {
+                var r = data[i];
+                var g = data[i+1];
+                var b = data[i+2];
+                
+                var gray = 0.3 * r + 0.59 * g + 0.11 * b;
+                
+                var tr = (gray + 40) * 1.1 * 0.95;
+                var tg = (gray + 15) * 1.1 * 0.95;
+                var tb = (gray - 15) * 1.1 * 0.95;
+                
+                data[i] = Math.min(255, tr);
+                data[i+1] = Math.min(255, tg);
+                data[i+2] = Math.max(0, Math.min(255, tb));
+              }
+              offCtx.putImageData(imgData, 0, 0);
+            } catch (e) {
+              console.warn('Canvas pixel manipulation failed (might be tainted):', e);
+            }
+
+            ctx.drawImage(offCanvas, drawX, drawY, drawW, drawH);
             ctx.restore();
 
             // 7. Double oval photo frame
