@@ -1,16 +1,15 @@
-html {
+html, body {
   height: 100%;
-  height: -webkit-fill-available;
+  width: 100%;
   overflow: hidden;
-  background-color: #0f172a;
-}
-
-body {
-  height: 100%;
-  height: -webkit-fill-available;
-  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   margin: 0;
   padding: 0;
+  background-color: #0f172a;
 }
 
 body {
@@ -27,13 +26,11 @@ body {
 }
 
 #app {
-  height: 100dvh;
-  height: -webkit-fill-available;
-  min-height: unset;
+  height: 100%;
   width: 100%;
   max-width: 448px;
   margin: 0 auto;
-  padding: 2rem 1rem 0 1rem;
+  padding: 0.5rem 1rem 0 1rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -55,8 +52,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  /* 增加底部留白，避免 Safari 懸浮網址列遮擋最下方的按鈕 */
-  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .step-section.active {

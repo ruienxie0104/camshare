@@ -657,36 +657,4 @@
 
   // Fade in page logic removed since CSS now handles fallback layout securely.
 
-  // ── iOS 鍵盤彈出修正 ──────────────────────────────────
-  // 使用 visualViewport API 偵測鍵盤出現，調整 #app 高度，防止整個畫面被推上去
-  if (window.visualViewport) {
-    var app = document.getElementById('app');
-    var lastViewportHeight = window.visualViewport.height;
-
-    window.visualViewport.addEventListener('resize', function () {
-      if (!app) return;
-      var newHeight = window.visualViewport.height;
-      var diff = lastViewportHeight - newHeight;
-
-      // 判斷鍵盤是否出現（高度縮小超過 100px）
-      if (diff > 100) {
-        // 鍵盤出現：縮小 app 高度，讓畫面不被推出去
-        app.style.height = newHeight + 'px';
-
-        // 捲動使目前焦點的輸入框保持在可視範圍內
-        var activeEl = document.activeElement;
-        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
-          setTimeout(function () {
-            activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 150);
-        }
-      } else if (diff < -50) {
-        // 鍵盤收起：恢復 app 高度
-        app.style.height = '';
-      }
-
-      lastViewportHeight = newHeight;
-    });
-  }
-
 })();
