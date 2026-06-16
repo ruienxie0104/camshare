@@ -655,12 +655,20 @@
   // Track initial step
   track('step_enter', { step: 0 });
 
-  // Hide loader and fade in page after initialization to prevent FOUC
-  setTimeout(function() {
+  // Wait for Tailwind CSS to compile before hiding loader and showing app
+  function waitForTailwind(callback) {
+    if (getComputedStyle(document.body).display === 'flex') {
+      callback();
+    } else {
+      setTimeout(function() { waitForTailwind(callback); }, 50);
+    }
+  }
+
+  waitForTailwind(function() {
     var loader = document.getElementById('global-loader');
     var appContainer = document.getElementById('app');
     if (loader) loader.classList.add('hidden');
     if (appContainer) appContainer.classList.add('ready');
-  }, 150);
+  });
 
 })();
