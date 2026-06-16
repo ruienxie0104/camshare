@@ -10,79 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    body {
-      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
-      /* Prevent FOUC while Tailwind CDN loads with a custom loader */
-      margin: 0;
-      background-color: #0f172a;
-    }
-    #app {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s ease-in-out, transform 0.5s ease-out;
-      transform: translateY(10px);
-    }
-    #app.ready {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-    #global-loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background-color: #0f172a;
-      z-index: 99999;
-      transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
-      gap: 1.5rem;
-    }
-    #global-loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-    .loader-spinner {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(99, 102, 241, 0.2);
-      border-top-color: #6366f1;
-      border-radius: 50%;
-      animation: loader-spin 1s linear infinite;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-    }
-    .loader-text {
-      color: #e2e8f0;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      animation: loader-pulse 1.5s ease-in-out infinite alternate;
-      background: linear-gradient(to right, #60a5fa, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    @keyframes loader-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes loader-pulse {
-      0% { opacity: 0.6; filter: drop-shadow(0 0 2px rgba(96,165,250,0.3)); }
-      100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.6)); }
-    }
-  </style>
 </head>
 <body class="aurora-bg min-h-screen flex flex-col items-center justify-start py-4 font-sans antialiased text-slate-200">
-
-  <!-- Global Loader to prevent FOUC -->
-  <div id="global-loader">
-    <div class="loader-spinner"></div>
-    <div class="loader-text">CamShare</div>
-  </div>
 
   <!-- Landscape lock overlay -->
   <div id="landscape-overlay">

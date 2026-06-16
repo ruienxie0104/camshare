@@ -655,14 +655,4 @@
   // Track initial step
   track('step_enter', { step: 0 });
 
-  // App launch animation: show loader for a minimum duration to feel like a native app launch
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var loader = document.getElementById('global-loader');
-      var appContainer = document.getElementById('app');
-      if (loader) loader.classList.add('hidden');
-      if (appContainer) appContainer.classList.add('ready');
-    }, 600);
-  });
-
 })();
