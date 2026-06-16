@@ -33,7 +33,7 @@ body {
   width: 100%;
   max-width: 448px;
   margin: 0 auto;
-  padding: 2rem 1rem 1.5rem 1rem;
+  padding: 2rem 1rem 0 1rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -55,7 +55,8 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 2rem;
+  /* 增加底部留白，避免 Safari 懸浮網址列遮擋最下方的按鈕 */
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
 .step-section.active {
@@ -231,7 +232,6 @@ body {
   #app {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
-    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
 }
 
