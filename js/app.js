@@ -655,9 +655,12 @@
   // Track initial step
   track('step_enter', { step: 0 });
 
-  // Fade in page after initialization to prevent FOUC
+  // Hide loader and fade in page after initialization to prevent FOUC
   setTimeout(function() {
-    document.body.classList.add('ready');
-  }, 100);
+    var loader = document.getElementById('global-loader');
+    var appContainer = document.getElementById('app');
+    if (loader) loader.classList.add('hidden');
+    if (appContainer) appContainer.classList.add('ready');
+  }, 150);
 
 })();
