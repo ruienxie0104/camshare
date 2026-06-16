@@ -537,6 +537,9 @@
 
   // Step 4 → Web Share
   if (btnWebShare) {
+    if (navigator.share) {
+      btnWebShare.style.display = 'block';
+    }
     btnWebShare.addEventListener('click', function () {
       if (state.compositeBlob && window.CamComposite) {
         track('share_attempt', { method: 'webshare' });
