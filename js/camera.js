@@ -105,6 +105,19 @@
     faceGuide.style.display = 'none';
     btnCapture.style.display = 'none';
 
+    // Reset previous preview state if returning from restart
+    if (photoPreview) {
+      photoPreview.style.display = 'none';
+      if (photoPreview.src) {
+        URL.revokeObjectURL(photoPreview.src);
+        photoPreview.src = '';
+      }
+    }
+    if (btnConfirm) btnConfirm.style.display = 'none';
+    if (btnRetake) btnRetake.style.display = 'none';
+    var previewBtnWrap = document.getElementById('preview-btn-wrap');
+    if (previewBtnWrap) previewBtnWrap.style.display = 'none';
+
     var constraints = {
       video: {
         facingMode: 'user',

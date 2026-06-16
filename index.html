@@ -5,9 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CamShare — 拍下你的尋人啟事</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-white min-h-screen flex items-center justify-center">
+<body class="aurora-bg min-h-screen flex flex-col items-center justify-start py-4 font-sans antialiased text-slate-200">
 
   <!-- Landscape lock overlay -->
   <div id="landscape-overlay">
@@ -19,131 +27,179 @@
     <p class="landscape-subtext">此活動頁面僅支援直屏模式</p>
   </div>
 
-  <div id="app" class="w-full max-w-md mx-auto px-4 py-6 relative">
+  <div id="app" class="w-full max-w-md mx-auto px-4 py-5 relative">
+
+    <!-- Step Indicator -->
+    <div class="step-indicator-container">
+      <div class="step-indicator-item active" id="step-dot-0">
+        <div class="step-indicator-dot">1</div>
+        <span class="step-indicator-label">首頁</span>
+      </div>
+      <div class="step-indicator-line"><div class="step-indicator-line-fill" id="step-line-0"></div></div>
+      <div class="step-indicator-item" id="step-dot-1">
+        <div class="step-indicator-dot">2</div>
+        <span class="step-indicator-label">資訊</span>
+      </div>
+      <div class="step-indicator-line"><div class="step-indicator-line-fill" id="step-line-1"></div></div>
+      <div class="step-indicator-item" id="step-dot-2">
+        <div class="step-indicator-dot">3</div>
+        <span class="step-indicator-label">拍照</span>
+      </div>
+      <div class="step-indicator-line"><div class="step-indicator-line-fill" id="step-line-2"></div></div>
+      <div class="step-indicator-item" id="step-dot-3">
+        <div class="step-indicator-dot">4</div>
+        <span class="step-indicator-label">分享</span>
+      </div>
+    </div>
 
     <!-- Step 0: 進入頁 -->
     <section id="step-0" class="step-section active">
-      <div class="text-center">
-        <h1 class="text-4xl font-bold text-blue-900 mb-2">CamShare</h1>
-        <p class="text-lg text-gray-500 mb-8">拍下你的尋人啟事</p>
+      <!-- Top/Center Content -->
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
+        <h1 class="text-4xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent tracking-tight mb-1">CamShare</h1>
+        <p class="text-xs text-slate-400 tracking-wide mb-6">專屬於你的復古懸賞海報</p>
 
-        <!-- Mockup preview placeholder -->
-        <div class="mockup-preview bg-gray-100 rounded-xl aspect-[3/4] max-w-xs mx-auto mb-8 flex items-center justify-center">
-          <div class="text-center text-gray-400">
-            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        <!-- Mockup preview -->
+        <div class="mockup-preview bg-slate-900/40 border border-white/10 rounded-2xl flex-1 max-h-[44dvh] aspect-[3/4] max-w-xs w-full mx-auto flex items-center justify-center relative overflow-hidden shadow-inner group cursor-pointer hover:border-blue-500/30 transition-all duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-1"></div>
+          
+          <!-- Decorative Focus corners -->
+          <div class="camera-focus-corner corner-tl opacity-60"></div>
+          <div class="camera-focus-corner corner-tr opacity-60"></div>
+          <div class="camera-focus-corner corner-bl opacity-60"></div>
+          <div class="camera-focus-corner corner-br opacity-60"></div>
+
+          <div class="text-center text-slate-500 z-2 group-hover:text-blue-400 transition-colors duration-300">
+            <svg class="w-12 h-12 mx-auto mb-2 opacity-60 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
-            <p class="text-sm">你的尋人啟事預覽</p>
+            <p class="text-[10px] uppercase tracking-widest font-semibold">WANTED POSTER PREVIEW</p>
+            <p class="text-[9px] text-slate-600 mt-0.5">點擊開始製作</p>
           </div>
         </div>
+      </div>
 
-        <button id="btn-start" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold">
-          開始
+      <!-- Bottom Button -->
+      <div class="pt-3">
+        <button id="btn-start" class="btn-primary-new w-full py-3.5 rounded-xl text-md font-bold tracking-wider">
+          開始製作
         </button>
       </div>
     </section>
 
     <!-- Step 1: 輸入資訊 -->
     <section id="step-1" class="step-section">
-      <div>
-        <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">填寫你的資訊</h2>
+      <!-- Top/Center Content -->
+      <div class="flex-1 flex flex-col justify-center py-2">
+        <h2 class="text-xl font-bold text-slate-100 mb-4 text-center tracking-wide">填寫懸賞資訊</h2>
 
         <!-- 名字 -->
-        <div class="mb-5">
-          <label for="input-name" class="block text-sm font-medium text-gray-700 mb-1">名字 <span class="text-red-400">*</span></label>
+        <div class="mb-4">
+          <label for="input-name" class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">名字 / 代號 <span class="text-red-400">*</span></label>
           <input
             type="text"
             id="input-name"
             maxlength="20"
             required
-            placeholder="輸入你的名字"
-            class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+            placeholder="請輸入名字或暱稱"
+            class="input-field-new w-full px-4 py-3 rounded-xl outline-none text-sm"
           >
-          <p id="name-error" class="text-red-400 text-xs mt-1 hidden">請輸入名字</p>
+          <p id="name-error" class="text-red-400 text-xs mt-1 hidden">⚠️ 請輸入名字以進行下一步</p>
         </div>
 
         <!-- 性別 -->
-        <div class="mb-5">
-          <label class="block text-sm font-medium text-gray-700 mb-2">性別</label>
+        <div class="mb-4">
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">性別</label>
           <div id="gender-group" class="flex gap-3">
-            <button type="button" data-gender="男" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+            <button type="button" data-gender="男" class="gender-btn-new flex-1 py-2.5 rounded-xl text-sm font-semibold transition">
               👨 男
             </button>
-            <button type="button" data-gender="女" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+            <button type="button" data-gender="女" class="gender-btn-new flex-1 py-2.5 rounded-xl text-sm font-semibold transition">
               👩 女
             </button>
-            <button type="button" data-gender="不指定" class="gender-btn flex-1 py-3 rounded-lg border-2 border-gray-300 font-medium transition">
+            <button type="button" data-gender="不指定" class="gender-btn-new flex-1 py-2.5 rounded-xl text-sm font-semibold transition">
               🌀 不指定
             </button>
           </div>
         </div>
 
         <!-- 年齡 -->
-        <div class="mb-8">
-          <label for="input-age" class="block text-sm font-medium text-gray-700 mb-1">年齡</label>
+        <div class="mb-6">
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">年齡</label>
           <input
             type="number"
             id="input-age"
             min="1"
             max="120"
-            placeholder="輸入年齡"
-            class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+            placeholder="請輸入年齡"
+            class="input-field-new w-full px-4 py-3 rounded-xl outline-none text-sm"
           >
         </div>
+      </div>
 
-        <button id="btn-next-step2" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold" disabled>
-          下一步
+      <!-- Bottom Button -->
+      <div class="pt-3">
+        <button id="btn-next-step2" class="btn-primary-new w-full py-3.5 rounded-xl text-md font-bold tracking-wider" disabled>
+          下一步：準備拍照
         </button>
       </div>
     </section>
 
     <!-- Step 2: 拍照 -->
     <section id="step-2" class="step-section">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-blue-900 mb-4">拍照</h2>
+      <!-- Top/Center Content -->
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
+        <h2 class="text-xl font-bold text-slate-100 mb-3 tracking-wide">擺出你的最佳表情</h2>
 
         <!-- Camera container -->
-        <div id="camera-container" class="camera-container">
+        <div id="camera-container" class="camera-container border border-white/10 shadow-2xl relative">
+
+          <!-- Focus corners -->
+          <div class="camera-focus-corner corner-tl"></div>
+          <div class="camera-focus-corner corner-tr"></div>
+          <div class="camera-focus-corner corner-bl"></div>
+          <div class="camera-focus-corner corner-br"></div>
 
           <!-- Loading spinner -->
           <div id="camera-loading" class="camera-loading" style="display:none;">
+            <div class="camera-focus-target"></div>
             <div class="camera-spinner"></div>
-            <p class="text-sm text-gray-500 mt-3">正在開啟相機…</p>
+            <p class="text-xs text-slate-400 mt-3 font-medium">正在啟動與對焦相機…</p>
           </div>
 
           <!-- Error message area -->
-          <div id="camera-error" class="camera-error" style="display:none;">
-            <svg class="w-12 h-12 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div id="camera-error" class="camera-error bg-slate-950/80 border border-red-500/20 text-slate-300" style="display:none;">
+            <svg class="w-10 h-10 mx-auto mb-2 text-red-500/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
-            <p class="error-title text-lg font-semibold text-gray-800 mb-2"></p>
-            <p class="error-body text-sm text-gray-600"></p>
+            <p class="error-title text-md font-bold text-slate-100 mb-1"></p>
+            <p class="error-body text-[10px] text-slate-400 px-4"></p>
           </div>
 
           <!-- Video stream -->
           <video id="camera-video" class="camera-video" playsinline muted autoplay></video>
 
           <!-- SVG poster frame overlay -->
-          <div id="poster-overlay" class="poster-overlay" style="display:none;">
+          <div id="poster-overlay" class="poster-overlay opacity-80" style="display:none;">
             <svg class="poster-overlay-svg" viewBox="0 0 360 480" preserveAspectRatio="xMidYMid meet">
               <!-- Top bar -->
-              <rect x="0" y="0" width="360" height="90" fill="#1e3a5f" opacity="0.85"/>
+              <rect x="0" y="0" width="360" height="90" fill="#111827" opacity="0.8"/>
               <!-- Title -->
-              <text x="180" y="60" text-anchor="middle" font-size="32" font-weight="700" fill="#ffffff" font-family="sans-serif" letter-spacing="6">尋人啟事</text>
+              <text x="180" y="60" text-anchor="middle" font-size="30" font-weight="900" fill="#ffffff" font-family="'Noto Sans TC', sans-serif" letter-spacing="8">WANTED</text>
               <!-- Left bracket -->
-              <path d="M 38 140 L 22 140 L 22 320 L 38 320" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <path d="M 38 140 L 22 140 L 22 320 L 38 320" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
               <!-- Right bracket -->
-              <path d="M 322 140 L 338 140 L 338 320 L 322 320" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <path d="M 322 140 L 338 140 L 338 320 L 322 320" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
               <!-- Bottom bar -->
-              <rect x="0" y="365" width="360" height="115" fill="#1e3a5f" opacity="0.85"/>
+              <rect x="0" y="365" width="360" height="115" fill="#111827" opacity="0.8"/>
               <!-- Info labels -->
-              <text x="180" y="400" text-anchor="middle" font-size="14" fill="#ffffff" font-family="sans-serif" opacity="0.7">
-                <tspan x="180">姓名：_____________</tspan>
-                <tspan x="180" dy="22">性別：_____　年齡：_____</tspan>
+              <text x="180" y="405" text-anchor="middle" font-size="14" fill="#e2e8f0" font-family="'Noto Sans TC', sans-serif" opacity="0.9">
+                <tspan x="180" font-weight="700">姓名：_____________</tspan>
+                <tspan x="180" dy="24" font-weight="700">性別：_____　年齡：_____</tspan>
               </text>
               <!-- Bottom dots -->
               <circle cx="165" cy="462" r="3" fill="#ffffff" opacity="0.4"/>
-              <circle cx="180" cy="462" r="3" fill="#93c5fd" opacity="0.7"/>
+              <circle cx="180" cy="462" r="3" fill="#60a5fa" opacity="0.8"/>
               <circle cx="195" cy="462" r="3" fill="#ffffff" opacity="0.4"/>
             </svg>
           </div>
@@ -151,7 +207,7 @@
           <!-- Face guide overlay -->
           <div id="face-guide" class="face-guide" style="display:none;">
             <div class="face-guide-oval"></div>
-            <p class="face-guide-text">把臉對準這裡</p>
+            <p class="face-guide-text font-bold uppercase text-slate-100 text-xs">對齊臉部</p>
           </div>
 
           <!-- Photo preview -->
@@ -160,92 +216,112 @@
           </div>
 
         </div>
+      </div>
 
+      <!-- Bottom Capture/Controls -->
+      <div class="pt-3">
         <!-- Capture button -->
-        <div id="capture-btn-wrap" class="capture-btn-wrap">
+        <div id="capture-btn-wrap" class="capture-btn-wrap mt-0">
           <button id="btn-capture" class="btn-capture" style="display:none;">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <svg class="w-7 h-7 text-indigo-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
           </button>
         </div>
 
         <!-- Confirm / Retake buttons -->
-        <div id="preview-btn-wrap" class="preview-btn-wrap" style="display:none;">
-          <button id="btn-retake" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">
-            重拍
+        <div id="preview-btn-wrap" class="preview-btn-wrap mt-0" style="display:none;">
+          <button id="btn-retake" class="btn-secondary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+            重新拍攝
           </button>
-          <button id="btn-confirm" class="btn-primary flex-1 py-3 rounded-lg font-semibold">
-            確認
+          <button id="btn-confirm" class="btn-primary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+            確認使用
           </button>
         </div>
-
       </div>
     </section>
 
     <!-- Step 3: 生成結果 -->
     <section id="step-3" class="step-section">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-blue-900 mb-6">你的尋人啟事</h2>
+      <!-- Top/Center Content -->
+      <div class="flex-1 flex flex-col justify-center py-2 text-center">
+        <h2 class="text-xl font-bold text-slate-100 mb-3 tracking-wide">生成結果</h2>
 
         <!-- Composite result area -->
-        <div class="composite-area relative">
-          <!-- Loading spinner -->
-          <div id="composite-loading" class="composite-loading">
+        <div class="composite-area relative border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+          
+          <!-- Loading spinner with develop animation -->
+          <div id="composite-loading" class="composite-loading bg-slate-950/95 text-slate-200">
             <div class="composite-spinner"></div>
-            <p class="text-sm text-gray-500 mt-3">正在生成你的尋人啟事</p>
-            <p class="loading-text">正在生成...</p>
+            <p class="text-xs text-slate-300 mt-3 font-bold tracking-wide">相片顯影中 (Developing)...</p>
+            <div class="developing-progress-bar">
+              <div id="developing-progress-fill" class="developing-progress-fill"></div>
+            </div>
+            <p class="loading-text text-[10px] text-slate-400 mt-1.5 font-mono">0%</p>
           </div>
 
-          <!-- Result image -->
-          <img id="composite-img" class="composite-img" src="" alt="你的尋人啟事" style="display:none;" />
+          <!-- 3D Card wrap for result -->
+          <div class="poster-3d-wrap" id="composite-img-wrap" style="display:none;">
+            <div class="poster-3d-card" id="composite-img-card">
+              <!-- Result image -->
+              <img id="composite-img" src="" alt="你的尋人啟事" class="composite-developing-img w-full h-full object-contain block" />
+              <div class="poster-3d-sheen"></div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="flex gap-3 mt-6">
-          <button id="btn-restart" class="btn-secondary flex-1 py-3 rounded-lg font-semibold">
-            重新開始
-          </button>
-          <button id="btn-share" class="btn-primary flex-1 py-3 rounded-lg font-semibold" disabled>
-            分享
-          </button>
-        </div>
+      <!-- Bottom Buttons -->
+      <div class="flex gap-3 pt-3">
+        <button id="btn-restart" class="btn-secondary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+          重新製作
+        </button>
+        <button id="btn-share" class="btn-primary-new flex-1 py-3.5 rounded-xl text-sm font-bold" disabled>
+          下一步：去分享
+        </button>
       </div>
     </section>
 
     <!-- Step 4: 分享 -->
     <section id="step-4" class="step-section">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-blue-900 mb-6">分享你的尋人啟事</h2>
+      <!-- Top/Center Content -->
+      <!-- Top/Center Content -->
+      <div class="flex flex-col items-center justify-start py-4 w-full">
+        <h2 class="text-xl font-bold text-slate-100 mb-4 tracking-wide">分享與儲存</h2>
 
-        <!-- Final composite image -->
-        <img id="share-img" class="composite-img scale-up" src="" alt="你的尋人啟事" />
+        <!-- 3D Card wrap for final share -->
+        <div class="relative w-full max-w-[260px] mx-auto aspect-[9/16] max-h-[50dvh] flex-shrink-0">
+          <div class="poster-3d-wrap w-full h-full">
+            <div class="poster-3d-card w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl" id="share-img-card">
+              <!-- Final composite image -->
+              <img id="share-img" src="" alt="你的尋人啟事" class="w-full h-full object-contain block" />
+              <div class="poster-3d-sheen"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <!-- Action buttons -->
-        <div class="share-actions mt-6">
-          <button id="btn-web-share" class="btn-primary w-full py-3 rounded-lg font-semibold" style="display:none;">
-            <svg class="inline w-5 h-5 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-            </svg>
-            分享圖片
+      <!-- Bottom Buttons -->
+      <div class="pt-4 w-full">
+        <div class="flex gap-3">
+          <button id="btn-download" class="btn-primary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+            下載高清海報
           </button>
-
-          <button id="btn-download" class="btn-secondary w-full py-3 rounded-lg font-semibold">
-            <svg class="inline w-5 h-5 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            下載圖片
+          <button id="btn-restart-final" class="btn-secondary-new flex-1 py-3.5 rounded-xl text-sm font-bold">
+            重新製作
+          </button>
+        </div>
+        <div class="mt-3">
+          <button id="btn-web-share" class="btn-primary-new w-full py-3.5 rounded-xl text-sm font-bold" style="display:none;">
+            分享海報
           </button>
         </div>
 
         <!-- iOS / WebView hint -->
-        <p id="share-hint" class="share-hint text-sm text-gray-500 mt-3" style="display:none;">
-          💡 長按圖片可儲存到相簿
+        <p id="share-hint" class="share-hint text-xs text-slate-400 mt-2" style="display:none;">
+          💡 提示：長按上方海報，即可儲存至手機相簿
         </p>
-
-        <button id="btn-restart-final" class="btn-secondary w-full py-3 rounded-lg font-semibold mt-3">
-          重新開始
-        </button>
       </div>
     </section>
 

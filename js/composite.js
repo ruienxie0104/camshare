@@ -7,14 +7,15 @@
   var W = 1080;
   var H = 1920;
   var COLORS = {
-    bg: '#ffffff',
-    titleBar: '#1e3a5f',
-    accent: '#93c5fd',
-    textDark: '#1e3a5f',
-    textLight: '#ffffff',
-    textMuted: '#9ca3af',
-    border: '#d1d5db',
-    lineGray: '#e5e7eb',
+    bg: '#f5efe1',          // 羊皮紙亮米色
+    bgDark: '#dccfb6',      // 羊皮紙暗褐色 (用於漸層)
+    titleBar: '#1c1917',    // 石炭黑
+    accent: '#b91c1c',      // 警示復古紅
+    textDark: '#1c1917',    // 石炭黑
+    textLight: '#f5efe1',   // 羊皮紙米色
+    textMuted: '#57534e',   // 灰褐色
+    border: '#78716c',      // 石炭灰
+    lineGray: '#a8a29e',    // 淺灰泥
   };
 
   // ── Font preload ────────────────────────────────────────
@@ -73,79 +74,72 @@
           canvas.height = H;
           var ctx = canvas.getContext('2d');
 
-          // 1. White background
-          ctx.fillStyle = COLORS.bg;
+          // 1. Vintage paper gradient background
+          var bgGrad = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, Math.max(W, H) / 1.1);
+          bgGrad.addColorStop(0, COLORS.bg);
+          bgGrad.addColorStop(1, COLORS.bgDark);
+          ctx.fillStyle = bgGrad;
           ctx.fillRect(0, 0, W, H);
 
-          // 2. Outer border
-          var borderWidth = 3;
-          var borderPad = pct(0.033, W); // ~36px
+          // Subtle vignette layer
+          ctx.fillStyle = 'rgba(120, 80, 40, 0.05)';
+          ctx.fillRect(0, 0, W, H);
+
+          // 2. Thick outer border (vintage poster frame)
+          var borderPad = pct(0.035, W); // ~38px
           ctx.strokeStyle = COLORS.titleBar;
-          ctx.lineWidth = borderWidth;
+          ctx.lineWidth = 14;
           ctx.beginPath();
-          drawRoundRect(ctx, borderPad, borderPad, W - borderPad * 2, H - borderPad * 2, 8);
+          drawRoundRect(ctx, borderPad, borderPad, W - borderPad * 2, H - borderPad * 2, 4);
           ctx.stroke();
 
-          // 3. Title bar (top 5%, height 8%)
-          var titleBarTop = pct(0.05, H);
-          var titleBarHeight = pct(0.08, H);
+          // Thin inner border line
+          ctx.strokeStyle = COLORS.titleBar;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          drawRoundRect(ctx, borderPad + 12, borderPad + 12, W - borderPad * 2 - 24, H - borderPad * 2 - 24, 0);
+          ctx.stroke();
+
+          // 3. Title bar (top 6%, height 9%)
+          var titleBarTop = pct(0.06, H);
+          var titleBarHeight = pct(0.09, H);
           ctx.fillStyle = COLORS.titleBar;
           ctx.beginPath();
-          drawRoundRect(ctx, 0, titleBarTop, W, titleBarHeight, 0);
+          drawRoundRect(ctx, borderPad + 14, titleBarTop, W - (borderPad + 14) * 2, titleBarHeight, 0);
           ctx.fill();
 
           // 4. Title text "尋人啟事"
           ctx.fillStyle = COLORS.textLight;
-          ctx.font = 'bold ' + pct(0.045, H) + 'px ' + FONT_FAMILY;
+          ctx.font = 'bold ' + pct(0.050, H) + 'px ' + FONT_FAMILY;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.letterSpacing = '8px';
+          ctx.letterSpacing = '10px';
           ctx.fillText('尋人啟事', W / 2, titleBarTop + titleBarHeight / 2);
 
           // Reset letter spacing
           ctx.letterSpacing = '0px';
 
-          // 5. Subtitle accent line
-          var lineY = titleBarTop + titleBarHeight + pct(0.015, H);
-          ctx.strokeStyle = COLORS.accent;
-          ctx.lineWidth = 2;
-          ctx.lineCap = 'round';
+          // 5. Subtitle accent line (Double retro lines)
+          var lineY1 = titleBarTop + titleBarHeight + pct(0.015, H);
+          var lineY2 = lineY1 + 6;
+          ctx.strokeStyle = COLORS.titleBar;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.moveTo(pct(0.28, W), lineY);
-          ctx.lineTo(pct(0.72, W), lineY);
+          ctx.moveTo(pct(0.15, W), lineY1);
+          ctx.lineTo(pct(0.85, W), lineY1);
           ctx.stroke();
 
-          // 6. Left decorative bracket
-          var bracketTop = pct(0.18, H);
-          var bracketBottom = pct(0.67, H);
-          var bracketLeft = pct(0.09, W);
-          var bracketArm = pct(0.04, W);
-
-          ctx.strokeStyle = COLORS.border;
           ctx.lineWidth = 1.5;
-          ctx.lineCap = 'round';
           ctx.beginPath();
-          ctx.moveTo(bracketLeft + bracketArm, bracketTop);
-          ctx.lineTo(bracketLeft, bracketTop);
-          ctx.lineTo(bracketLeft, bracketBottom);
-          ctx.lineTo(bracketLeft + bracketArm, bracketBottom);
+          ctx.moveTo(pct(0.20, W), lineY2);
+          ctx.lineTo(pct(0.80, W), lineY2);
           ctx.stroke();
 
-          // 7. Right decorative bracket
-          var bracketRight = pct(0.91, W);
-
-          ctx.beginPath();
-          ctx.moveTo(bracketRight - bracketArm, bracketTop);
-          ctx.lineTo(bracketRight, bracketTop);
-          ctx.lineTo(bracketRight, bracketBottom);
-          ctx.lineTo(bracketRight - bracketArm, bracketBottom);
-          ctx.stroke();
-
-          // 8. Elliptical photo area with clip
+          // 6. Photo frame variables
           var photoCenterX = W / 2;
           var photoCenterY = pct(0.42, H);
-          var photoRx = pct(0.30, W);  // horizontal radius
-          var photoRy = pct(0.26, H);  // vertical radius
+          var photoRx = pct(0.31, W);  // horizontal radius
+          var photoRy = pct(0.25, H);  // vertical radius
 
           // Load photo and draw into ellipse
           var photoImg = new Image();
@@ -175,67 +169,114 @@
               drawY = photoCenterY - drawH / 2;
             }
 
+            // Apply Sepia vintage filter on canvas
+            ctx.filter = 'sepia(0.85) contrast(1.1) brightness(0.95)';
             ctx.drawImage(photoImg, drawX, drawY, drawW, drawH);
+            ctx.filter = 'none'; // reset filter
             ctx.restore();
 
-            // Ellipse border (dashed)
-            ctx.strokeStyle = COLORS.lineGray;
-            ctx.lineWidth = 2;
-            ctx.setLineDash([6, 4]);
+            // 7. Double oval photo frame
+            // Outer thick frame
+            ctx.strokeStyle = COLORS.titleBar;
+            ctx.lineWidth = 10;
             ctx.beginPath();
             ctx.ellipse(photoCenterX, photoCenterY, photoRx, photoRy, 0, 0, Math.PI * 2);
             ctx.stroke();
-            ctx.setLineDash([]);
 
-            // 9. Divider line above info area
-            var dividerY = pct(0.70, H);
-            ctx.strokeStyle = COLORS.border;
-            ctx.lineWidth = 1;
+            // Inner thin frame
+            ctx.strokeStyle = COLORS.bg;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.ellipse(photoCenterX, photoCenterY, photoRx - 5, photoRy - 5, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 8. Red Stamp "REWARD $1,000,000" in retro distressed style
+            ctx.save();
+            ctx.translate(pct(0.74, W), pct(0.58, H));
+            ctx.rotate(14 * Math.PI / 180); // Rotate 14 deg
+            
+            // Stamp Border
+            ctx.strokeStyle = 'rgba(185, 28, 28, 0.82)'; // Red
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            drawRoundRect(ctx, -125, -40, 250, 80, 10);
+            ctx.stroke();
+
+            // Stamp inner border (dashed)
+            ctx.lineWidth = 1.5;
             ctx.setLineDash([4, 3]);
             ctx.beginPath();
-            ctx.moveTo(pct(0.17, W), dividerY);
-            ctx.lineTo(pct(0.83, W), dividerY);
+            drawRoundRect(ctx, -118, -33, 236, 66, 6);
             ctx.stroke();
             ctx.setLineDash([]);
 
+            // Stamp Text
+            ctx.fillStyle = 'rgba(185, 28, 28, 0.82)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 24px ' + FONT_FAMILY;
+            ctx.fillText('REWARD', 0, -12);
+            ctx.font = 'bold 30px ' + FONT_FAMILY;
+            ctx.fillText('$1,000,000', 0, 18);
+            ctx.restore();
+
+            // 9. Decorative divider lines for Info Area
+            var dividerY = pct(0.70, H);
+            ctx.strokeStyle = COLORS.titleBar;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(pct(0.18, W), dividerY);
+            ctx.lineTo(pct(0.82, W), dividerY);
+            ctx.stroke();
+
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(pct(0.24, W), dividerY + 5);
+            ctx.lineTo(pct(0.76, W), dividerY + 5);
+            ctx.stroke();
+
             // 10. Name text (large, centered)
             var name = userInfo.name || '___';
-            var nameY = pct(0.76, H);
+            var nameY = pct(0.77, H);
             ctx.fillStyle = COLORS.textDark;
-            ctx.font = 'bold ' + pct(0.042, H) + 'px ' + FONT_FAMILY;
+            ctx.font = 'bold ' + pct(0.045, H) + 'px ' + FONT_FAMILY;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(name, W / 2, nameY);
+            ctx.fillText('姓名：' + name, W / 2, nameY);
 
             // 11. Gender + Age text (smaller, centered)
-            var gender = userInfo.gender || '';
-            var age = userInfo.age ? String(userInfo.age) : '';
-            var infoParts = [];
-            if (gender) infoParts.push('性別：' + gender);
-            if (age) infoParts.push('年齡：' + age);
-            var infoText = infoParts.join('　');
-            var infoY = pct(0.80, H);
+            var gender = userInfo.gender || '不指定';
+            var age = userInfo.age ? String(userInfo.age) : '未提供';
+            var infoText = '性別：' + gender + '　　年齡：' + age;
+            var infoY = pct(0.83, H);
 
             ctx.fillStyle = COLORS.textMuted;
-            ctx.font = pct(0.022, H) + 'px ' + FONT_FAMILY;
+            ctx.font = 'bold ' + pct(0.026, H) + 'px ' + FONT_FAMILY;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(infoText || '　', W / 2, infoY);
+            ctx.fillText(infoText, W / 2, infoY);
+
+            // Vintage subtext at the very bottom
+            var subtextY = pct(0.89, H);
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = pct(0.016, H) + 'px ' + FONT_FAMILY;
+            ctx.textAlign = 'center';
+            ctx.fillText('如有尋獲，請速與 CamShare 警局聯絡。', W / 2, subtextY);
 
             // 12. Bottom decorative dots
-            var dotY = pct(0.95, H);
+            var dotY = pct(0.94, H);
             ctx.beginPath();
-            ctx.arc(W / 2 - 20, dotY, 3, 0, Math.PI * 2);
+            ctx.arc(W / 2 - 24, dotY, 4, 0, Math.PI * 2);
             ctx.fillStyle = COLORS.border;
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(W / 2, dotY, 3, 0, Math.PI * 2);
+            ctx.arc(W / 2, dotY, 5, 0, Math.PI * 2);
             ctx.fillStyle = COLORS.accent;
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(W / 2 + 20, dotY, 3, 0, Math.PI * 2);
+            ctx.arc(W / 2 + 24, dotY, 4, 0, Math.PI * 2);
             ctx.fillStyle = COLORS.border;
             ctx.fill();
 
@@ -257,13 +298,11 @@
 
           photoImg.onerror = function () {
             // Even if photo fails, draw the poster without photo
-            ctx.strokeStyle = COLORS.lineGray;
-            ctx.lineWidth = 2;
-            ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = COLORS.titleBar;
+            ctx.lineWidth = 10;
             ctx.beginPath();
             ctx.ellipse(photoCenterX, photoCenterY, photoRx, photoRy, 0, 0, Math.PI * 2);
             ctx.stroke();
-            ctx.setLineDash([]);
 
             // Output both formats even for fallback
             canvas.toBlob(function (jpegBlob) {
