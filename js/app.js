@@ -655,6 +655,9 @@
   // Track initial step
   track('step_enter', { step: 0 });
 
-  // Fade in page logic removed since CSS now handles fallback layout securely.
+  // Fade in page after initialization to prevent FOUC
+  setTimeout(function() {
+    document.body.classList.add('ready');
+  }, 100);
 
 })();
